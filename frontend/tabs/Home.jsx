@@ -41,7 +41,7 @@ const Home = () => {
 
   const fetchUserName = async () => {
     try {
-      const userToken = await SecureStore.getItemAsync('userToken');
+      const userToken = await SecureStore.getItemAsync('regularUserToken');
 
       const config = {
         headers: {

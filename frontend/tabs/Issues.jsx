@@ -28,7 +28,7 @@ const Issues = () => {
       console.log(2);
       try {
         console.log(3);
-        const userToken = await SecureStore.getItemAsync('userToken');
+        const userToken = await SecureStore.getItemAsync('regularUserToken');
         console.log(4);
         const config = {
           headers: {

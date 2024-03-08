@@ -48,6 +48,7 @@ const SignInModal = () => {
     setShowSignUpModal(false);
     setEmail('');
     setPassword('');
+    setIsPasswordVisible(false);
   };
 
   const handleSignIn = async () => {
@@ -64,9 +65,10 @@ const SignInModal = () => {
         email,
         password,
       });
-      const { token } = response.data;
-      if (token) {
-        signIn(token);
+      const { regularUserToken } = response.data;
+      console.log(response.data);
+      if (regularUserToken) {
+        signIn(regularUserToken);
         setEmail('');
         setPassword('');
         setLoading(false);
@@ -80,14 +82,25 @@ const SignInModal = () => {
         console.log('sunucu yanıtı:', error.response?.data);
       }
     } catch (error) {
-      if (error.response && error.response.status === 401) {
+      setLoading(false);
+      if (error.response) {
+        // Hata bilgisini konsola yazdır.
+        console.log('Sunucu yanıtı:', error.response.data);
+
+        // Özelleştirilmiş hata mesajını kullanıcıya göster.
         Alert.alert(
           'Giriş Başarısız.',
-          'Lütfen e-posta ve şifrenizi kontrol ediniz.'
+          error.response.data.message ||
+            'Bir hata oluştu, lütfen daha sonra tekrar deneyin.'
+        );
+      } else {
+        // Sunucudan herhangi bir yanıt alınamadığında genel hata mesajını göster.
+        Alert.alert(
+          'Giriş Başarısız.',
+          'Sunucu yanıt vermiyor. Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.',
+          [{ text: 'Tamam' }]
         );
       }
-
-      setLoading(false);
     }
   };
 

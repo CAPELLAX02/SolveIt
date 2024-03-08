@@ -40,7 +40,7 @@ const Profile = () => {
       if (isAuthenticated) {
         setLoading(true);
         try {
-          const userToken = await SecureStore.getItemAsync('userToken');
+          const userToken = await SecureStore.getItemAsync('regularUserToken');
 
           const config = {
             headers: {

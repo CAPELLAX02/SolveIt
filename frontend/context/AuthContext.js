@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     let userToken;
 
     try {
-      userToken = await SecureStore.getItemAsync('userToken');
+      userToken = await SecureStore.getItemAsync('regularUserToken');
 
       if (userToken) {
         const config = {
@@ -61,27 +61,13 @@ export const AuthProvider = ({ children }) => {
     bootstrapAsync();
   }, [lastChecked]);
 
-  // useEffect(() => {
-  //   const bootstrapAsync = async () => {
-  //     let userToken;
-  //     try {
-  //       userToken = await SecureStore.getItemAsync('userToken');
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //     setIsAuthenticated(!!userToken);
-  //   };
-
-  //   bootstrapAsync();
-  // }, []);
-
   const signIn = async (token) => {
-    await SecureStore.setItemAsync('userToken', token);
+    await SecureStore.setItemAsync('regularUserToken', token);
     setIsAuthenticated(true);
   };
 
   const signOut = async () => {
-    await SecureStore.deleteItemAsync('userToken');
+    await SecureStore.deleteItemAsync('regularUserToken');
     setIsAuthenticated(false);
   };
 

@@ -18,7 +18,7 @@ const app = express();
 
 connectDB(); // Connect to database
 
-app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 
 // CORS için yapılandırma
 const corsOptions = {
