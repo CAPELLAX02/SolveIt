@@ -42,6 +42,11 @@ const userSchema = mongoose.Schema(
     emailVerificationCodeExpires: Date,
     resetPasswordCode: String,
     resetPasswordCodeExpires: Date,
+    pushToken: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
   },
   {
     timestamps: true,

@@ -20,6 +20,8 @@ import SignUpModal from './SignUpModal';
 import LoginBackground from '../components/LoginBackground';
 import ForgotPasswordModal from './ForgotPasswordModal';
 import { BASE_ENDPOINT } from '../constants';
+import * as SecureStore from 'expo-secure-store';
+import * as Notifications from 'expo-notifications';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -51,6 +53,45 @@ const SignInModal = () => {
     setIsPasswordVisible(false);
   };
 
+  const registerForPushNotificationsAsync = async () => {
+    let token;
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus === 'granted') {
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+    } else {
+      alert('Failed to get push token for push notification!');
+    }
+
+    return token;
+  };
+
+  const sendPushTokenToServer = async (token) => {
+    const userToken = await SecureStore.getItemAsync('regularUserToken');
+    try {
+      await axios.put(
+        `${BASE_ENDPOINT}/users/push-token`,
+        {
+          pushToken: token,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      console.log('Push token successfully sent to the server');
+    } catch (error) {
+      console.error('Error sending push token to server:', error);
+      Alert.alert('Error', 'Could not send push token to server.');
+    }
+  };
+
   const handleSignIn = async () => {
     setLoading(true);
 
@@ -68,39 +109,30 @@ const SignInModal = () => {
       const { regularUserToken } = response.data;
       console.log(response.data);
       if (regularUserToken) {
-        signIn(regularUserToken);
+        await signIn(regularUserToken); // AuthContext'teki signIn fonksiyonunu çağır
+
+        const token = await registerForPushNotificationsAsync();
+        if (token) {
+          try {
+            await sendPushTokenToServer(token);
+          } catch (error) {
+            console.log('sendPushTokenToServer çalışmıyor.', error);
+          }
+        } else {
+          console.log('push token alınamadı.');
+        }
+
         setEmail('');
         setPassword('');
         setLoading(false);
         Alert.alert('Giriş Başarılı!', 'Hoş Geldiniz!');
       } else {
-        console.log('5');
-        console.log('Giriş Başarısız.', 'Token Alınamadı.');
         setLoading(false);
-      }
-      if (error.response) {
-        console.log('sunucu yanıtı:', error.response?.data);
+        Alert.alert('Giriş Başarısız.', 'Token alınamadı.');
       }
     } catch (error) {
       setLoading(false);
-      if (error.response) {
-        // Hata bilgisini konsola yazdır.
-        console.log('Sunucu yanıtı:', error.response.data);
-
-        // Özelleştirilmiş hata mesajını kullanıcıya göster.
-        Alert.alert(
-          'Giriş Başarısız.',
-          error.response.data.message ||
-            'Bir hata oluştu, lütfen daha sonra tekrar deneyin.'
-        );
-      } else {
-        // Sunucudan herhangi bir yanıt alınamadığında genel hata mesajını göster.
-        Alert.alert(
-          'Giriş Başarısız.',
-          'Sunucu yanıt vermiyor. Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.',
-          [{ text: 'Tamam' }]
-        );
-      }
+      console.log('giriş yapma axios requestinde sorun var.', error);
     }
   };
 

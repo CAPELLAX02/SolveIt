@@ -103,7 +103,7 @@ const IssuesPage = () => {
           <div key={option.value} className='form-check form-switch mb-1'>
             <input
               type='radio'
-              className='form-check-input'
+              className='form-check-input '
               id={option.value}
               name={name}
               value={option.value}

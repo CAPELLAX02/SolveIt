@@ -15,6 +15,8 @@ import Colors from '../assets/Colors';
 import { StatusBar } from 'expo-status-bar';
 import VerificationModal from './VerificationModal';
 import { BASE_ENDPOINT } from '../constants';
+import * as Notifications from 'expo-notifications';
+import * as SecureStore from 'expo-secure-store';
 
 const SignUpModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -94,8 +96,9 @@ const SignUpModal = ({ onClose }) => {
       return;
     }
 
+    setLoading(true);
+
     try {
-      setLoading(true);
       const response = await axios.post(`${BASE_ENDPOINT}/users`, {
         name,
         surname,
@@ -103,39 +106,42 @@ const SignUpModal = ({ onClose }) => {
         email,
         password,
       });
+
+      setLoading(false);
       setVerificationModalVisible(true);
     } catch (error) {
       console.error(error.response || error.toJSON());
       Alert.alert(
-        'Kayıt Başarısız!',
-        'Bir hata oluştu. Lütfen bilgilerinizi kontrol edin ve tekrar deneyin.'
+        'Kayıt Hatası',
+        error.response?.data?.message ||
+          'Kayıt işlemi sırasında bir hata oluştu.'
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // Doğrulama kodunu backend'e gönderecek fonksiyon:
   const handleVerificationCodeSubmit = async (code) => {
+    setLoading(true);
     try {
-      const response = await axios.post(`${BASE_ENDPOINT}/users/verify-email`, {
-        email: email,
+      await axios.post(`${BASE_ENDPOINT}/users/verify-email`, {
+        email,
         verificationCode: code,
       });
-
       Alert.alert(
         'Başarılı!',
-        'E-posta adresini başarılı bir şekilde doğruladın, aramıza hoş geldin!'
+        'E-posta adresiniz başarıyla doğrulandı. Lütfen giriş yapın.'
       );
+      setLoading(false);
       setVerificationModalVisible(false);
       clearInputs();
       onClose();
     } catch (error) {
-      console.log('Hata oluştu: ', error);
-      // console.log('Hata oluştu: ', error.stack);
+      setLoading(false);
       Alert.alert(
-        'İşlem Başarısız.',
-        'Lütfen kodu doğru girdiğinizden emin olup tekrar deneyiniz.'
+        'Doğrulama Hatası',
+        error.response?.data?.message ||
+          'Doğrulama kodu hatalı veya süresi dolmuş.'
       );
     }
   };

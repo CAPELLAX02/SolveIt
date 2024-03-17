@@ -2,6 +2,7 @@ import asyncHandler from '../middleware/asyncHandler.js';
 import User from '../models/userModel.js';
 import Issue from '../models/issueModel.js';
 import { generateAdminToken } from '../utils/generateAdminToken.js';
+import { sendNotificationHelper } from '../utils/pushNotificationService.js';
 
 /**
  * @desc    Auth admin user & get token
@@ -233,6 +234,131 @@ const deleteIssue = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @desc    Send push notification to a user
+ * @route   POST /api/admin/users/:id/send-notification
+ * @access  Private/Admin
+ */
+const sendNotification = asyncHandler(async (req, res) => {
+  const { token, title, body } = req.body;
+
+  await sendNotificationHelper(token, title, body);
+
+  res.status(200).json({
+    message: 'Bildirim başarılıyla gönderildi.',
+  });
+});
+
+/**
+ * @desc    Send positive feedback to a user
+ * @route   POST /api/admin/users/:id/send-positive-feedback
+ * @access  Private/Admin
+ */
+const sendPositiveFeedback = asyncHandler(async (req, res) => {
+  const { feedbackMessage } = req.body; // Geri bildirim metnini al
+  const issue = await Issue.findById(req.params.id);
+
+  if (!issue) {
+    return res.status(404).send('Issue bulunamadı.');
+  }
+
+  const user = await User.findById(issue.user);
+  if (user && user.pushToken) {
+    await sendNotificationHelper(
+      user.pushToken,
+      'Bildirdiğiniz Sorun Çözüldü!',
+      `İş birliğin için teşekkürler ${user.name}! ${feedbackMessage}`
+    );
+
+    issue.status = 'solved';
+    await issue.save();
+
+    res.json({ message: 'Geri bildirim gönderildi ve issue güncellendi.' });
+  } else {
+    res
+      .status(404)
+      .json({ message: 'Kullanıcı bulunamadı veya push token mevcut değil.' });
+  }
+  // const { issueId, feedbackMessage, feedbackPhoto } = req.body;
+  // const issue = await Issue.findById(issueId);
+  // if (!issue) {
+  //   return res.status(404).send('Issue bulunamadı.');
+  // }
+  // const user = await User.findById(issue.user);
+  // if (user && user.pushToken) {
+  //   await sendNotification(
+  //     user.pushToken,
+  //     'Bildirdiğiniz Sorun Çözüldü!',
+  //     `İş birliğin için teşekkürler ${user.name}! Sorunun çözüldüğünü bildirmekten mutluluk duyuyoruz.`
+  //   );
+
+  //   issue.status = 'solved';
+  //   issue.feedbackMessage = feedbackMessage;
+  //   issue.feedbackPhoto = feedbackPhoto;
+  //   await issue.save();
+
+  //   res.json({ message: 'Geri bildirim gönderildi ve issue güncellendi.' });
+  // } else {
+  //   res
+  //     .status(404)
+  //     .json({ message: 'Kullanıcı bulunamadı veya push token mevcut değil.' });
+  // }
+});
+
+/**
+ * @desc    Send negative feedback to a user
+ * @route   POST /api/admin/users/:id/send-negative-feedback
+ * @access  Private/Admin
+ */
+const sendNegativeFeedback = asyncHandler(async (req, res) => {
+  const { feedbackMessage } = req.body; // Geri bildirim metnini al
+  const issue = await Issue.findById(req.params.id);
+
+  if (!issue) {
+    return res.status(404).send('Issue bulunamadı.');
+  }
+
+  const user = await User.findById(issue.user);
+  if (user && user.pushToken) {
+    await sendNotificationHelper(
+      user.pushToken,
+      'Maalesef Bildirdiğiniz Sorun Çözülemedi.',
+      `İş birliğin için teşekkürler ${user.name}. ${feedbackMessage}`
+    );
+
+    issue.status = 'unsolved';
+    await issue.save();
+
+    res.json({ message: 'Geri bildirim gönderildi ve issue güncellendi.' });
+  } else {
+    res
+      .status(404)
+      .json({ message: 'Kullanıcı bulunamadı veya push token mevcut değil.' });
+  }
+  // const { issueId, feedbackMessage, feedbackPhoto } = req.body;
+  // const issue = await Issue.findById(issueId);
+  // if (!issue) {
+  //   return res.status(404).send('Issue bulunamadı.');
+  // }
+  // const user = await User.findById(issue.user);
+  // if (user && user.pushToken) {
+  //   await sendNotification(
+  //     user.pushToken,
+  //     'Maalesef bildirdiğiniz sorun çözülemedi.',
+  //     `İş birliğin için teşekkürler sevgili ${user.name}.`
+  //   );
+  //   issue.status = 'unsolved';
+  //   issue.feedbackMessage = feedbackMessage;
+  //   issue.feedbackPhoto = feedbackPhoto;
+  //   await issue.save();
+  //   res.json({ message: 'Geri bildirim gönderildi ve issue güncellendi.' });
+  // } else {
+  //   res
+  //     .status(404)
+  //     .json({ message: 'Kullanıcı bulunamadı veya push token mevcut değil.' });
+  // }
+});
+
 export {
   authAdminUser,
   logoutAdminUser,
@@ -246,4 +372,7 @@ export {
   unsolveIssue,
   deleteIssue,
   getAdminProfile,
+  sendNotification,
+  sendPositiveFeedback,
+  sendNegativeFeedback,
 };

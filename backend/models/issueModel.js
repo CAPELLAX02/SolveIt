@@ -32,6 +32,8 @@ const issueSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    feedbackPhoto: String,
+    feedbackMessage: String,
   },
   {
     timestamps: true,

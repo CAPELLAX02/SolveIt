@@ -12,8 +12,12 @@ import {
   unsolveIssue,
   deleteIssue,
   getAdminProfile,
+  sendNotification,
+  sendPositiveFeedback,
+  sendNegativeFeedback,
 } from '../controllers/adminController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
+// import { uploadFeedback } from '../config/feedbackMulterConfig.js';
 
 const router = express.Router();
 
@@ -34,5 +38,24 @@ router.get('/issues', protect, admin, getAllIssues);
 router.post('/issues/:id/solve', protect, admin, solveIssue);
 router.post('/issues/:id/unsolve', protect, admin, unsolveIssue);
 router.delete('/issues/:id', protect, admin, deleteIssue);
+
+// Feedback and Notification Routes for Admin Users
+router.post('/issues/:id/send-notification', protect, admin, sendNotification);
+
+router.post(
+  '/issues/:id/send-positive-feedback',
+  protect,
+  admin,
+  // uploadFeedback.single('feedbackPhoto'),
+  sendPositiveFeedback
+);
+
+router.post(
+  '/issues/:id/send-negative-feedback',
+  protect,
+  admin,
+  // uploadFeedback.single('feedbackPhoto'),
+  sendNegativeFeedback
+);
 
 export default router;

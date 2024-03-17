@@ -84,7 +84,7 @@ const IssueFormModal = ({ onClose, userAddress }) => {
       name: 'photo.jpg', // Fotoğrafın dosya adı
     });
 
-    const userToken = await SecureStore.getItemAsync('userToken');
+    const userToken = await SecureStore.getItemAsync('regularUserToken');
 
     try {
       const response = await axios.post(`${BASE_ENDPOINT}/upload`, formData, {
@@ -127,7 +127,7 @@ const IssueFormModal = ({ onClose, userAddress }) => {
         address: userAddress,
       };
 
-      const userToken = await SecureStore.getItemAsync('userToken');
+      const userToken = await SecureStore.getItemAsync('regularUserToken');
 
       console.log(title);
       console.log(code);

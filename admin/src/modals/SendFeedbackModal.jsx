@@ -3,31 +3,34 @@ import axios from 'axios';
 
 const SendFeedbackModal = ({ isOpen, onRequestClose, issueId }) => {
   const [feedbackText, setFeedbackText] = useState('');
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
 
   if (!isOpen) {
     return null;
   }
 
-  const handleSolveIssue = async () => {
+  const handleSendFeedback = async (feedbackType) => {
     if (window.confirm('Geri bildirim göndermek istediğinize emin misiniz?')) {
       try {
-        const formData = new FormData();
-        formData.append('text', feedbackText);
-        if (image) {
-          formData.append('image', image, image.name);
-        }
-        await axios.post(
-          `http://localhost:8000/api/admin/issues/${issueId}/solve`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-            withCredentials: true,
-          }
+        const feedbackMessage = { feedbackMessage: feedbackText }; // Geri bildirim metnini hazırla
+
+        const endpoint =
+          feedbackType === 'positive'
+            ? `/api/admin/issues/${issueId}/send-positive-feedback`
+            : `/api/admin/issues/${issueId}/send-negative-feedback`;
+
+        await axios.post(`http://localhost:8000${endpoint}`, feedbackMessage, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true,
+        });
+
+        alert(
+          `Geri bildirim ${
+            feedbackType === 'positive' ? 'pozitif' : 'negatif'
+          } olarak gönderildi.`
         );
-        alert('Sorun çözüldü olarak işaretlendi.');
         onRequestClose();
       } catch (error) {
         alert(
@@ -37,33 +40,67 @@ const SendFeedbackModal = ({ isOpen, onRequestClose, issueId }) => {
     }
   };
 
-  const handleUnsolveIssue = async () => {
-    if (window.confirm('Geri bildirim göndermek istediğinize emin misiniz?')) {
-      try {
-        const formData = new FormData();
-        formData.append('text', feedbackText);
-        if (image) {
-          formData.append('image', image, image.name);
-        }
-        await axios.post(
-          `http://localhost:8000/api/admin/issues/${issueId}/unsolve`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-            withCredentials: true,
-          }
-        );
-        alert('Sorun çözülemedi olarak işaretlendi.');
-        onRequestClose();
-      } catch (error) {
-        alert(
-          'Geri bildirim gönderilirken bir hata meydana geldi: ' + error.message
-        );
-      }
-    }
-  };
+  // Çözüldüğünü Kullanıcıya Bildir butonu için
+  const handleSolveIssue = () => handleSendFeedback('positive');
+
+  // Çözülemediğini Kullanıcıya Bildir butonu için
+  const handleUnsolveIssue = () => handleSendFeedback('negative');
+
+  // const handleSolveIssue = async () => {
+  //   if (window.confirm('Geri bildirim göndermek istediğinize emin misiniz?')) {
+  //     try {
+  //       const formData = new FormData();
+  //       formData.append('text', feedbackText);
+  //       if (image) {
+  //         formData.append('image', image, image.name);
+  //       }
+  //       await axios.post(
+  //         `http://localhost:8000/api/admin/issues/${issueId}/solve`,
+  //         formData,
+  //         {
+  //           headers: {
+  //             'Content-Type': 'multipart/form-data',
+  //           },
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       alert('Sorun çözüldü olarak işaretlendi.');
+  //       onRequestClose();
+  //     } catch (error) {
+  //       alert(
+  //         'Geri bildirim gönderilirken bir hata meydana geldi: ' + error.message
+  //       );
+  //     }
+  //   }
+  // };
+
+  // const handleUnsolveIssue = async () => {
+  //   if (window.confirm('Geri bildirim göndermek istediğinize emin misiniz?')) {
+  //     try {
+  //       const formData = new FormData();
+  //       formData.append('text', feedbackText);
+  //       if (image) {
+  //         formData.append('image', image, image.name);
+  //       }
+  //       await axios.post(
+  //         `http://localhost:8000/api/admin/issues/${issueId}/unsolve`,
+  //         formData,
+  //         {
+  //           headers: {
+  //             'Content-Type': 'multipart/form-data',
+  //           },
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       alert('Sorun çözülemedi olarak işaretlendi.');
+  //       onRequestClose();
+  //     } catch (error) {
+  //       alert(
+  //         'Geri bildirim gönderilirken bir hata meydana geldi: ' + error.message
+  //       );
+  //     }
+  //   }
+  // };
 
   return (
     <div
@@ -96,7 +133,7 @@ const SendFeedbackModal = ({ isOpen, onRequestClose, issueId }) => {
                 <label htmlFor='feedbackText'>Geri Bildirim Metni</label>
               </div>
               <div className='form-group d-flex flex-column ms-2'>
-                <label htmlFor='feedbackImage' className='mb-2 fw-medium'>
+                {/* <label htmlFor='feedbackImage' className='mb-2 fw-medium'>
                   Sorunun çözüldüğüne dair fotoğraf ekle
                 </label>
                 <input
@@ -104,7 +141,7 @@ const SendFeedbackModal = ({ isOpen, onRequestClose, issueId }) => {
                   className='form-control-file'
                   id='feedbackImage'
                   onChange={(e) => setImage(e.target.files[0])}
-                />
+                /> */}
               </div>
             </form>
           </div>
