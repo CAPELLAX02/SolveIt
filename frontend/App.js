@@ -14,6 +14,8 @@ import { useState, useEffect } from 'react';
 import SignInModal from './modals/SignInModal';
 import SignUpModal from './modals/SignUpModal';
 import BannedUserScreen from './modals/BannedUserScreen';
+import SplashScreen from './components/SplashScreen';
+import LottieView from 'lottie-react-native';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -60,7 +62,29 @@ const AppContent = () => {
   }
 
   if (!isAuthenticated) {
-    return <SignInModal />;
+    // return <SignInModal />;
+    return (
+      <View
+        style={{
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 1,
+        }}
+      >
+        <LottieView
+          autoPlay
+          loop
+          style={{
+            width: 200,
+            height: 200,
+            aspectRatio: 1,
+            backgroundColor: '#eee',
+          }}
+          source={require('./assets/lottie/animation.json')}
+        />
+      </View>
+    );
   }
 
   return (

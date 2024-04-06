@@ -106,6 +106,7 @@ const SignInModal = () => {
         email,
         password,
       });
+
       const { regularUserToken } = response.data;
       console.log(response.data);
       if (regularUserToken) {
@@ -131,6 +132,10 @@ const SignInModal = () => {
         Alert.alert('Giriş Başarısız.', 'Token alınamadı.');
       }
     } catch (error) {
+      Alert.alert(
+        'Giriş Başarısız.',
+        'Lütfen internet bağlantınızı kontrol edip tekrar deneyin.'
+      );
       setLoading(false);
       console.log('giriş yapma axios requestinde sorun var.', error);
     }
