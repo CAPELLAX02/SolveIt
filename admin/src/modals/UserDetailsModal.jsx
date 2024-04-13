@@ -12,14 +12,14 @@ const UserDetailsModal = ({ userId, onClose }) => {
       try {
         setLoading(true);
         const userDetailsResponse = await axios.get(
-          `http://localhost:8000/api/admin/users/${userId}`,
+          `https://bbb-mobil-backend.onrender.com/api/admin/users/${userId}`,
           {
             withCredentials: true,
           }
         );
         setUser(userDetailsResponse.data);
         const userIssuesResponse = await axios.get(
-          `http://localhost:8000/api/admin/issues?user=${userId}`,
+          `https://bbb-mobil-backend.onrender.com/api/admin/issues?user=${userId}`,
           {
             withCredentials: true,
           }

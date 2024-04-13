@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     const checkSession = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:8000/api/admin/profile',
+          'https://bbb-mobil-backend.onrender.com/api/admin/profile',
           { withCredentials: true }
         );
         setIsAuthenticated(true);
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/admin/auth',
+        'https://bbb-mobil-backend.onrender.com/api/admin/auth',
         { email, password },
         { withCredentials: true }
       );
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       await axios.post(
-        'http://localhost:8000/api/admin/logout',
+        'https://bbb-mobil-backend.onrender.com/api/admin/logout',
         {},
         { withCredentials: true }
       );

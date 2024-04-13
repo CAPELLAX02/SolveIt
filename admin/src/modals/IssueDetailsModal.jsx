@@ -38,7 +38,7 @@ const IssueDetailsModal = ({ isOpen, onClose, issue, user }) => {
     ) {
       try {
         await axios.delete(
-          `http://localhost:8000/api/admin/issues/${issue._id}`,
+          `https://bbb-mobil-backend.onrender.com/api/admin/issues/${issue._id}`,
           {
             withCredentials: true,
           }
@@ -59,7 +59,7 @@ const IssueDetailsModal = ({ isOpen, onClose, issue, user }) => {
     ) {
       try {
         await axios.put(
-          `http://localhost:8000/api/admin/users/${issue.user}/ban`,
+          `https://bbb-mobil-backend.onrender.com/api/admin/users/${issue.user}/ban`,
           {},
           {
             withCredentials: true,
@@ -81,7 +81,7 @@ const IssueDetailsModal = ({ isOpen, onClose, issue, user }) => {
     ) {
       try {
         await axios.put(
-          `http://localhost:8000/api/admin/users/${issue.user}/unban`,
+          `https://bbb-mobil-backend.onrender.com/api/admin/users/${issue.user}/unban`,
           {},
           {
             withCredentials: true,

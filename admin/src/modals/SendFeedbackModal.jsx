@@ -19,12 +19,16 @@ const SendFeedbackModal = ({ isOpen, onRequestClose, issueId }) => {
             ? `/api/admin/issues/${issueId}/send-positive-feedback`
             : `/api/admin/issues/${issueId}/send-negative-feedback`;
 
-        await axios.post(`http://localhost:8000${endpoint}`, feedbackMessage, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true,
-        });
+        await axios.post(
+          `https://bbb-mobil-backend.onrender.com${endpoint}`,
+          feedbackMessage,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            withCredentials: true,
+          }
+        );
 
         alert(
           `Geri bildirim ${

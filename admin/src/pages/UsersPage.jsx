@@ -24,7 +24,7 @@ const UsersPage = () => {
       setUsersLoading(true);
       try {
         const { data } = await axios.get(
-          'http://localhost:8000/api/admin/users',
+          'https://bbb-mobil-backend.onrender.com/api/admin/users',
           {
             withCredentials: true,
           }

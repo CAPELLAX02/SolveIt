@@ -31,7 +31,7 @@ const IssuesPage = () => {
       setIssuesLoading(true);
       try {
         const { data } = await axios.get(
-          'http://localhost:8000/api/admin/issues',
+          'https://bbb-mobil-backend.onrender.com/api/admin/issues',
           {
             withCredentials: true,
           }
@@ -57,7 +57,7 @@ const IssuesPage = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/users/${issue.user}`,
+        `https://bbb-mobil-backend.onrender.com/api/admin/users/${issue.user}`,
         {
           withCredentials: true,
         }
